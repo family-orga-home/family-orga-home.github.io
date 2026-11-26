@@ -1,11 +1,11 @@
 // Service Worker: App funktioniert offline (z. B. im Supermarkt-Funkloch).
 // Die Dateiliste (PRECACHE) wird beim Build automatisch eingetragen.
-const VERSION = 'mwxfse3x';
+const VERSION = 'mwxhjfpb';
 const CACHE = 'family-orga-' + VERSION;
 const OCR_CACHE = 'family-orga-ocr-e50d898969';
-const PRECACHE = ["./","./assets/index-DjTBh09C.js","./assets/index-DpZT6Xpc.css","./assets/ocr-CeDIpvxV.js","./icons/apple-touch-icon.png","./icons/icon-192.png","./icons/icon-512.png","./icons/icon-maskable-512.png","./index.html","./manifest.webmanifest"];
+const PRECACHE = ["./","./assets/index-DpZT6Xpc.css","./assets/index-geIWJoD2.js","./assets/ocr-CeDIpvxV.js","./icons/apple-touch-icon.png","./icons/icon-192.png","./icons/icon-512.png","./icons/icon-maskable-512.png","./index.html","./manifest.webmanifest"];
 // SHA-256 je Datei (Pfad relativ zur App). Schutz, falls jemand den Zwischenspeicher manipuliert.
-const HASHES = {"/assets/index-DjTBh09C.js":"922aab2df4483814120cd5a0b4f6756c516224713aac6b16f5b5538f42e0d316","/assets/index-DpZT6Xpc.css":"d08edfb14589548fdd0d8c1608652c9483facb42c6090575e3ecc0db7e3619e7","/assets/ocr-CeDIpvxV.js":"e67456fcd7caf1339ba4240e16a8f948b62380df3d31228aab0549fc88cd3b10","/icons/apple-touch-icon.png":"2a6b7cbb1dadf0d97bb7fe980141191d0d07e95764d90c409dff666bab2a25b5","/icons/icon-192.png":"de944230bc58b0f1b4048353ab12eb15de62ae32c0dab548ce84d31f43bc78d5","/icons/icon-512.png":"f14828236af7df48cae627a4899ac3f461f62c111d071a2a62381a3ee34a2335","/icons/icon-maskable-512.png":"d9a9f61bac653d11e6e6a965e1b0888efaf6a7e9bdb343436e87abb0329b9160","/index.html":"5b7a851cf1c07e5326f73bdad6254c1e0f9c3cd7cb43756174890de055398020","/manifest.webmanifest":"0bda864c2c495236a318443b65fa62460b3377a4ccd47ffa09ff66b5fb209d3f","/ocr/core/tesseract-core-lstm.wasm.js":"8f04aa0cc81e7bde33f80e92fa01a7a665f0b4884d098acf5de9c7104a11dfaa","/ocr/core/tesseract-core-simd-lstm.wasm.js":"ce20eda9533cbed1e6c2b4276fbae1e0adc61b6754b5513084be601787b457cf","/ocr/lang/deu.traineddata.gz":"306c4280d0cbed46fbff727486bd43b92730181bae80f56941a091f363bdf28b","/ocr/worker.min.js":"aca1229639fc9907d86f96e825955a2b7c5716d17f3bc3acd71f9c7ab66181fc"};
+const HASHES = {"/assets/index-DpZT6Xpc.css":"d08edfb14589548fdd0d8c1608652c9483facb42c6090575e3ecc0db7e3619e7","/assets/index-geIWJoD2.js":"21f5c9e5297bbb5b207814ece182f5c0d95de8673c08444aa257ea9a88a3cfe6","/assets/ocr-CeDIpvxV.js":"e67456fcd7caf1339ba4240e16a8f948b62380df3d31228aab0549fc88cd3b10","/icons/apple-touch-icon.png":"2a6b7cbb1dadf0d97bb7fe980141191d0d07e95764d90c409dff666bab2a25b5","/icons/icon-192.png":"de944230bc58b0f1b4048353ab12eb15de62ae32c0dab548ce84d31f43bc78d5","/icons/icon-512.png":"f14828236af7df48cae627a4899ac3f461f62c111d071a2a62381a3ee34a2335","/icons/icon-maskable-512.png":"d9a9f61bac653d11e6e6a965e1b0888efaf6a7e9bdb343436e87abb0329b9160","/index.html":"1f68173226c4f9aa266e4aea10e3e9e2f83c72be57b2ac727162b23b79797a02","/manifest.webmanifest":"0bda864c2c495236a318443b65fa62460b3377a4ccd47ffa09ff66b5fb209d3f","/ocr/core/tesseract-core-lstm.wasm.js":"8f04aa0cc81e7bde33f80e92fa01a7a665f0b4884d098acf5de9c7104a11dfaa","/ocr/core/tesseract-core-simd-lstm.wasm.js":"ce20eda9533cbed1e6c2b4276fbae1e0adc61b6754b5513084be601787b457cf","/ocr/lang/deu.traineddata.gz":"306c4280d0cbed46fbff727486bd43b92730181bae80f56941a091f363bdf28b","/ocr/worker.min.js":"aca1229639fc9907d86f96e825955a2b7c5716d17f3bc3acd71f9c7ab66181fc"};
 const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, '');
 const verified = new Set();
 const hex = (buf) => [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
@@ -79,13 +79,16 @@ function readFamilyCode() {
     try {
       const req = indexedDB.open('family-orga');
       req.onerror = () => resolve(null);
+      // Nie selbst eine (leere) Datenbank anlegen und Verbindung immer schließen – sonst blockiert sie die App
+      req.onupgradeneeded = () => { try { req.transaction.abort(); } catch { /* egal */ } };
       req.onsuccess = () => {
+        const dbh = req.result;
         try {
-          const tx = req.result.transaction('meta', 'readonly');
+          const tx = dbh.transaction('meta', 'readonly');
           const g = tx.objectStore('meta').get('familyCode');
-          g.onsuccess = () => { resolve(g.result ? g.result.value : null); req.result.close(); };
-          g.onerror = () => resolve(null);
-        } catch { resolve(null); }
+          g.onsuccess = () => { resolve(g.result ? g.result.value : null); dbh.close(); };
+          g.onerror = () => { resolve(null); dbh.close(); };
+        } catch { resolve(null); dbh.close(); }
       };
     } catch { resolve(null); }
   });
