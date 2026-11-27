@@ -1,11 +1,11 @@
 // Service Worker: App funktioniert offline (z. B. im Supermarkt-Funkloch).
 // Die Dateiliste (PRECACHE) wird beim Build automatisch eingetragen.
-const VERSION = 'mwzf87wv';
+const VERSION = 'mwzfwvcp';
 const CACHE = 'family-orga-' + VERSION;
 const OCR_CACHE = 'family-orga-ocr-e50d898969';
-const PRECACHE = ["./","./assets/index-AUJo3gx_.css","./assets/index-g8sLQaZx.js","./assets/jspdf.es.min-BK-avKV6.js","./assets/letterPdf-Dvp2wvG4.js","./assets/ocr-CeDIpvxV.js","./icons/apple-touch-icon.png","./icons/icon-192.png","./icons/icon-512.png","./icons/icon-maskable-512.png","./index.html","./manifest.webmanifest"];
+const PRECACHE = ["./","./assets/index-CRIRZYYA.js","./assets/index-DZvEMn4Y.css","./assets/jspdf.es.min-Bp7lKBUN.js","./assets/letterPdf-Dw2j_wWZ.js","./assets/ocr-CeDIpvxV.js","./icons/apple-touch-icon.png","./icons/icon-192.png","./icons/icon-512.png","./icons/icon-maskable-512.png","./index.html","./manifest.webmanifest"];
 // SHA-256 je Datei (Pfad relativ zur App). Schutz, falls jemand den Zwischenspeicher manipuliert.
-const HASHES = {"/assets/html2canvas.esm-BfxBtG_O.js":"b471b10e16146893cfa97e18fc83cacd3996b63ce527b10dad4b44d232c64884","/assets/index-AUJo3gx_.css":"846e9cc5e7b8f2c4c6365abf42b57a238cd0f0727c7a6998a2035450295392e2","/assets/index-g8sLQaZx.js":"9e2f8fb23b6bf10780b72935c7778485408b49d563fb53cb54e9eee96f88f0f6","/assets/index.es-BXn-QS0n.js":"f575a84fb0d24d8d487674f391bce5e6b2be7a6104f3fa7eb60460cb4d132fd9","/assets/jspdf.es.min-BK-avKV6.js":"0b24ccbf16c92db0199decdfb61662674845bafc2ed0ab7dbb0ab48affec02ea","/assets/letterPdf-Dvp2wvG4.js":"77a91c2330405a75276dc46bb2dd1f155711f5773ce47b6ad4d432992820c4d0","/assets/ocr-CeDIpvxV.js":"e67456fcd7caf1339ba4240e16a8f948b62380df3d31228aab0549fc88cd3b10","/assets/purify.es-BwoZCkIS.js":"0917726fedf3b7ad791784f09f89d85a858d76a6ada18d24aefaeb3c5b94311a","/icons/apple-touch-icon.png":"2a6b7cbb1dadf0d97bb7fe980141191d0d07e95764d90c409dff666bab2a25b5","/icons/icon-192.png":"de944230bc58b0f1b4048353ab12eb15de62ae32c0dab548ce84d31f43bc78d5","/icons/icon-512.png":"f14828236af7df48cae627a4899ac3f461f62c111d071a2a62381a3ee34a2335","/icons/icon-maskable-512.png":"d9a9f61bac653d11e6e6a965e1b0888efaf6a7e9bdb343436e87abb0329b9160","/index.html":"548646c1c6a0ef2fa2fe640825eff08d37f5829168441b9327ae6f0305cf5c71","/manifest.webmanifest":"0bda864c2c495236a318443b65fa62460b3377a4ccd47ffa09ff66b5fb209d3f","/ocr/core/tesseract-core-lstm.wasm.js":"8f04aa0cc81e7bde33f80e92fa01a7a665f0b4884d098acf5de9c7104a11dfaa","/ocr/core/tesseract-core-simd-lstm.wasm.js":"ce20eda9533cbed1e6c2b4276fbae1e0adc61b6754b5513084be601787b457cf","/ocr/lang/deu.traineddata.gz":"306c4280d0cbed46fbff727486bd43b92730181bae80f56941a091f363bdf28b","/ocr/worker.min.js":"aca1229639fc9907d86f96e825955a2b7c5716d17f3bc3acd71f9c7ab66181fc"};
+const HASHES = {"/assets/html2canvas.esm-BfxBtG_O.js":"b471b10e16146893cfa97e18fc83cacd3996b63ce527b10dad4b44d232c64884","/assets/index-CRIRZYYA.js":"7305df9964838b7152e9304343a9e41917b705d61cb8ad41ada9a001cf1e7d88","/assets/index-DZvEMn4Y.css":"1b62a3daec32567a699031ca2526c2dc4d8b4190860dc48535405721ae47a670","/assets/index.es-BqVttAbI.js":"f5bd309d44b3be117d5bbcc89568c38264b7821095f50afc4bfc5c41da9d443c","/assets/jspdf.es.min-Bp7lKBUN.js":"c71b6e4b03ce939964eadccf1a1cac41880392cd21e9ba1ce625c777e3026c16","/assets/letterPdf-Dw2j_wWZ.js":"28665a1bc16a1c55262a907ad7d871c9034ccdc6e238db2be8f660caf3b12e9f","/assets/ocr-CeDIpvxV.js":"e67456fcd7caf1339ba4240e16a8f948b62380df3d31228aab0549fc88cd3b10","/assets/purify.es-BwoZCkIS.js":"0917726fedf3b7ad791784f09f89d85a858d76a6ada18d24aefaeb3c5b94311a","/icons/apple-touch-icon.png":"2a6b7cbb1dadf0d97bb7fe980141191d0d07e95764d90c409dff666bab2a25b5","/icons/icon-192.png":"de944230bc58b0f1b4048353ab12eb15de62ae32c0dab548ce84d31f43bc78d5","/icons/icon-512.png":"f14828236af7df48cae627a4899ac3f461f62c111d071a2a62381a3ee34a2335","/icons/icon-maskable-512.png":"d9a9f61bac653d11e6e6a965e1b0888efaf6a7e9bdb343436e87abb0329b9160","/index.html":"2e7e5aaea59db873c2fadf9c249754f9a88ae9771a9c8f49d9d6e3cb59b3b4f7","/manifest.webmanifest":"0bda864c2c495236a318443b65fa62460b3377a4ccd47ffa09ff66b5fb209d3f","/ocr/core/tesseract-core-lstm.wasm.js":"8f04aa0cc81e7bde33f80e92fa01a7a665f0b4884d098acf5de9c7104a11dfaa","/ocr/core/tesseract-core-simd-lstm.wasm.js":"ce20eda9533cbed1e6c2b4276fbae1e0adc61b6754b5513084be601787b457cf","/ocr/lang/deu.traineddata.gz":"306c4280d0cbed46fbff727486bd43b92730181bae80f56941a091f363bdf28b","/ocr/worker.min.js":"aca1229639fc9907d86f96e825955a2b7c5716d17f3bc3acd71f9c7ab66181fc"};
 // true nur auf der alten Adresse: dort keine Benachrichtigungen mehr (sonst kommt alles doppelt)
 const RETIRED = false;
 const retirePush = () => self.registration.pushManager.getSubscription().then((s) => s && s.unsubscribe()).catch(() => {});
@@ -79,7 +79,9 @@ async function logPush(entry) {
 }
 
 // Verschlüsselte Meldungen („FOE:…“) mit dem Schlüssel aus dem Familien-Code öffnen (gleiche Rechnung wie src/lib/seal.js)
-function readFamilyCode() {
+function readFamilyCode() { return readMeta('familyCode'); }
+// Einen Wert aus dem lokalen Speicher der App lesen (nur lesen, nie anlegen)
+function readMeta(key) {
   return new Promise((resolve) => {
     try {
       const req = indexedDB.open('family-orga');
@@ -90,13 +92,21 @@ function readFamilyCode() {
         const dbh = req.result;
         try {
           const tx = dbh.transaction('meta', 'readonly');
-          const g = tx.objectStore('meta').get('familyCode');
+          const g = tx.objectStore('meta').get(key);
           g.onsuccess = () => { resolve(g.result ? g.result.value : null); dbh.close(); };
           g.onerror = () => { resolve(null); dbh.close(); };
         } catch { resolve(null); dbh.close(); }
       };
     } catch { resolve(null); }
   });
+}
+// Liegt die Uhrzeit in der leisen Zeit? (auch über Mitternacht, z. B. 21:00–06:30)
+function inQuietHours(q, d) {
+  if (!q || !q.on) return false;
+  const m = (s) => { const x = /^(\d{1,2}):(\d{2})$/.exec(String(s || '')); return x ? +x[1] * 60 + +x[2] : null; };
+  const f = m(q.from), t = m(q.to), n = d.getHours() * 60 + d.getMinutes();
+  if (f === null || t === null || f === t) return false;
+  return f < t ? n >= f && n < t : n >= f || n < t;
 }
 async function unseal(text) {
   const code = String((await readFamilyCode()) || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -136,6 +146,8 @@ self.addEventListener('push', (e) => {
       vibrate: day ? [300, 150, 300, 150, 600] : [200, 100, 200], data: { url: self.registration.scope, help },
       ...(help ? { actions: [{ action: 'ok', title: '✅ Klappt' }, { action: 'help', title: '😤 Klappt nicht' }] } : {}),
     };
+    // 🔕 Leise Zeit (pro Handy eingestellt): Meldung kommt trotzdem, aber ohne Ton und Vibration
+    try { if (inQuietHours(await readMeta('quietHours'), new Date())) { full.silent = true; delete full.vibrate; } } catch { /* egal */ }
     // Protokoll (für „Benachrichtigungen prüfen“) ohne Inhalt: nur Art und ob angezeigt
     const kind = String(d.tag || (day ? 'tagesablauf' : 'family-orga')).slice(0, 20);
     try {
