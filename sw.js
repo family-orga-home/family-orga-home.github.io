@@ -1,11 +1,11 @@
 // Service Worker: App funktioniert offline (z. B. im Supermarkt-Funkloch).
 // Die Dateiliste (PRECACHE) wird beim Build automatisch eingetragen.
-const VERSION = 'mwz28h9i';
+const VERSION = 'mwz2zs23';
 const CACHE = 'family-orga-' + VERSION;
 const OCR_CACHE = 'family-orga-ocr-e50d898969';
-const PRECACHE = ["./","./assets/index-DtL0fiAW.css","./assets/index-jj-Cu8o4.js","./assets/ocr-CeDIpvxV.js","./icons/apple-touch-icon.png","./icons/icon-192.png","./icons/icon-512.png","./icons/icon-maskable-512.png","./index.html","./manifest.webmanifest"];
+const PRECACHE = ["./","./assets/index-B0Yq6zRI.js","./assets/index-eoKyFBqL.css","./assets/ocr-CeDIpvxV.js","./icons/apple-touch-icon.png","./icons/icon-192.png","./icons/icon-512.png","./icons/icon-maskable-512.png","./index.html","./manifest.webmanifest"];
 // SHA-256 je Datei (Pfad relativ zur App). Schutz, falls jemand den Zwischenspeicher manipuliert.
-const HASHES = {"/assets/index-DtL0fiAW.css":"0cf969860b34860dda51526ad30668dbf535c2c909733dbdac1b766cd19a988c","/assets/index-jj-Cu8o4.js":"4ccc687eaaea6ec00424cb6044f8d79698dcaec3ae0c84c6d37e7c5956921374","/assets/ocr-CeDIpvxV.js":"e67456fcd7caf1339ba4240e16a8f948b62380df3d31228aab0549fc88cd3b10","/icons/apple-touch-icon.png":"2a6b7cbb1dadf0d97bb7fe980141191d0d07e95764d90c409dff666bab2a25b5","/icons/icon-192.png":"de944230bc58b0f1b4048353ab12eb15de62ae32c0dab548ce84d31f43bc78d5","/icons/icon-512.png":"f14828236af7df48cae627a4899ac3f461f62c111d071a2a62381a3ee34a2335","/icons/icon-maskable-512.png":"d9a9f61bac653d11e6e6a965e1b0888efaf6a7e9bdb343436e87abb0329b9160","/index.html":"91bbe255e2d61337ae5c8f53998ac06b5a8bd4dbed29d4a38a38193eecb4b58e","/manifest.webmanifest":"0bda864c2c495236a318443b65fa62460b3377a4ccd47ffa09ff66b5fb209d3f","/ocr/core/tesseract-core-lstm.wasm.js":"8f04aa0cc81e7bde33f80e92fa01a7a665f0b4884d098acf5de9c7104a11dfaa","/ocr/core/tesseract-core-simd-lstm.wasm.js":"ce20eda9533cbed1e6c2b4276fbae1e0adc61b6754b5513084be601787b457cf","/ocr/lang/deu.traineddata.gz":"306c4280d0cbed46fbff727486bd43b92730181bae80f56941a091f363bdf28b","/ocr/worker.min.js":"aca1229639fc9907d86f96e825955a2b7c5716d17f3bc3acd71f9c7ab66181fc"};
+const HASHES = {"/assets/index-B0Yq6zRI.js":"d317f9b7958bc143f9411cfa27bc043e2f89f6dab60563b1aaf952c1e066f2ca","/assets/index-eoKyFBqL.css":"9f0f93484d0d05df5aa4cda28184d0c7527adfda6a63c66dc87540e8643442ec","/assets/ocr-CeDIpvxV.js":"e67456fcd7caf1339ba4240e16a8f948b62380df3d31228aab0549fc88cd3b10","/icons/apple-touch-icon.png":"2a6b7cbb1dadf0d97bb7fe980141191d0d07e95764d90c409dff666bab2a25b5","/icons/icon-192.png":"de944230bc58b0f1b4048353ab12eb15de62ae32c0dab548ce84d31f43bc78d5","/icons/icon-512.png":"f14828236af7df48cae627a4899ac3f461f62c111d071a2a62381a3ee34a2335","/icons/icon-maskable-512.png":"d9a9f61bac653d11e6e6a965e1b0888efaf6a7e9bdb343436e87abb0329b9160","/index.html":"82479cfc8b41e84d115161a04c231a214475f26afa09c081d6c6425e81a771fc","/manifest.webmanifest":"0bda864c2c495236a318443b65fa62460b3377a4ccd47ffa09ff66b5fb209d3f","/ocr/core/tesseract-core-lstm.wasm.js":"8f04aa0cc81e7bde33f80e92fa01a7a665f0b4884d098acf5de9c7104a11dfaa","/ocr/core/tesseract-core-simd-lstm.wasm.js":"ce20eda9533cbed1e6c2b4276fbae1e0adc61b6754b5513084be601787b457cf","/ocr/lang/deu.traineddata.gz":"306c4280d0cbed46fbff727486bd43b92730181bae80f56941a091f363bdf28b","/ocr/worker.min.js":"aca1229639fc9907d86f96e825955a2b7c5716d17f3bc3acd71f9c7ab66181fc"};
 // true nur auf der alten Adresse: dort keine Benachrichtigungen mehr (sonst kommt alles doppelt)
 const RETIRED = false;
 const retirePush = () => self.registration.pushManager.getSubscription().then((s) => s && s.unsubscribe()).catch(() => {});
@@ -128,9 +128,12 @@ self.addEventListener('push', (e) => {
     }
     // Tagesablauf (Ruhezeit/Schlafenszeit) eigene Gruppe, damit Brief-Erinnerungen nicht verdrängt werden
     const day = /^(⏳|🤫|🟢|😴|☀️|📵|🌙|💬)/u.test(title);
+    // Jetzt-Hilfe: zu welcher Lage passt die Meldung? (Android zeigt dann zwei Knöpfe)
+    const help = helpFor(title);
     const full = {
       body, tag: day ? 'tagesablauf' : d.tag || 'family-orga', renotify: true, icon, badge: icon,
-      vibrate: day ? [300, 150, 300, 150, 600] : [200, 100, 200], data: { url: self.registration.scope },
+      vibrate: day ? [300, 150, 300, 150, 600] : [200, 100, 200], data: { url: self.registration.scope, help },
+      ...(help ? { actions: [{ action: 'ok', title: '✅ Klappt' }, { action: 'help', title: '😤 Klappt nicht' }] } : {}),
     };
     // Protokoll (für „Benachrichtigungen prüfen“) ohne Inhalt: nur Art und ob angezeigt
     const kind = String(d.tag || (day ? 'tagesablauf' : 'family-orga')).slice(0, 20);
@@ -145,13 +148,29 @@ self.addEventListener('push', (e) => {
   })());
 });
 
+// Lage für die Jetzt-Hilfe aus dem Titel der Meldung
+function helpFor(title) {
+  if (/^⏳/u.test(title)) return 'stopPlay';
+  if (/^🤫/u.test(title)) return 'calm';
+  if (/^📵/u.test(title)) return 'screens';
+  if (/^🌙/u.test(title)) return 'evening';
+  if (/^😴/u.test(title)) return 'bed';
+  if (/^☀️/u.test(title) && !/Morgenbriefing/.test(title)) return 'morning';
+  return null;
+}
+
 self.addEventListener('notificationclick', (e) => {
   e.notification.close();
-  // Tagesablauf/Abendroutine → direkt die Kinder-Seite öffnen
-  const kids = /^(⏳|🤫|🟢|😴|☀️|📵|🌙|💬)/u.test(e.notification.title || '');
+  if (e.action === 'ok') return; // „Klappt“: nichts weiter tun
+  // Tagesablauf/Abendroutine → direkt die Kinder-Seite öffnen; „Klappt nicht“ → gleich die Ideen
+  const title = e.notification.title || '';
+  const kids = /^(⏳|🤫|🟢|😴|☀️|📵|🌙|💬)/u.test(title) && !/Morgenbriefing/.test(title);
+  const help = e.notification.data?.help || helpFor(title);
+  const direct = e.action === 'help' && help;
+  const hash = direct ? `#hilfe=${help}` : help ? `#kinder&hilfe=${help}` : kids ? '#kinder' : '';
   e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
     const c = list.find((w) => w.url.startsWith(self.registration.scope));
-    if (c) { if (kids) c.postMessage({ open: 'kids' }); return c.focus(); }
-    return self.clients.openWindow(self.registration.scope + (kids ? '#kinder' : ''));
+    if (c) { if (kids || help) c.postMessage({ open: 'kids', help, soft: !direct }); return c.focus(); }
+    return self.clients.openWindow(self.registration.scope + hash);
   }));
 });
